@@ -18,6 +18,11 @@ To execute this job, use:
 gcloud run jobs execute vis-oz-pipeline
 
 
+python3.12 -m functions-framework --target=extract_and_load_visualoz --port=8080
+
+/usr/local/lib/python3.8/dist-packages/google/api_core/_python_version_support.py:23
+
+
 # then added env:TARGET_PROJECT_ID in service yaml file as the code requires this env
 
 # trigger
