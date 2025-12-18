@@ -36,7 +36,9 @@ steps:
       - '0'
       - '--set-env-vars'
       - 'TARGET_PROJECT_ID=gcp-wow-rwds-ai-semology-dev'
-
+options:
+  logging: CLOUD_LOGGING_ONLY
+  
 # Define where the built images are stored
 images:
   - 'us-docker.pkg.dev/gcp-wow-rwds-ai-mleops-prod/semology/vis-oz-pipeline:latest'
