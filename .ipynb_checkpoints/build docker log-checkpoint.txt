@@ -10,12 +10,12 @@ docker run -it --rm vis-oz-pipeline:latest /bin/sh
 # turned out I should deploy a job
 
 
-gcloud run jobs deploy vis-oz-pipeline   --image=us-docker.pkg.dev/gcp-wow-rwds-ai-mleops-prod/semology/vis-oz-pipeline:latest   --region=us-central1   --service-account=semology-dev@gcp-wow-rwds-ai-semology-dev.iam
-.gserviceaccount.com   --memory=4Gi   --tasks=1   --max-retries=0
+gcloud run jobs deploy vis-oz-pipeline   --image=us-docker.pkg.dev/gcp-wow-rwds-ai-mleops-prod/semology/vis-oz-pipeline:latest   --region=us-central1   --service-account=semology-dev@gcp-wow-rwds-ai-semology-dev.iam.gserviceaccount.com   --memory=4Gi   --tasks=1   --max-retries=0
 Deploying container to Cloud Run job [vis-oz-pipeline] in project [gcp-wow-rwds-ai-semology-dev] region [us-central1]
 ✓ Creating job... Done.                                                                                                        
 Done.                                                                                                                          
-Job [vis-oz-pipeline] has successfully been deployed.
+To execute this job, use:
+gcloud run jobs execute vis-oz-pipeline
 
 
 # then added env:TARGET_PROJECT_ID in service yaml file as the code requires this env

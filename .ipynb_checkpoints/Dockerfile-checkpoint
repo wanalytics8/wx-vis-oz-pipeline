@@ -28,11 +28,11 @@ WORKDIR /app
 
 # 5. Copy and install Python dependencies
 COPY requirements.txt .
-RUN pip3 install --no-cache-dir --upgrade -r requirements.txt --ignore-installed blinker
+RUN python3.12 -m pip install --no-cache-dir --upgrade -r requirements.txt --ignore-installed blinker
 
 # 6. Copy your main script (rename is optional, but common practice)
 COPY main_script_cf.py main.py
 
 # 7. Define the container entry point (runs your script as a service)
-# Cloud Run recognizes the main function and listens for HTTP triggers
-CMD ["functions-framework", "--target=extract_and_load_visualoz", "--port=8080"]
+# don't invoke functions-framework directly which hash-bang invokes own py3.8
+CMD ["python3.12", "-m", "functions-framework", "--target=extract_and_load_visualoz", "--port=8080"]
