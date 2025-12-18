@@ -1,0 +1,55 @@
+# I changed to python3.12 in Dockerfile
+
+docker build -t vis-oz-pipeline .
+docker push us-docker.pkg.dev/gcp-wow-rwds-ai-mleops-prod/semology/vis-oz-pipeline
+
+
+# to test docker
+docker run -it --rm vis-oz-pipeline:latest /bin/sh
+
+# turned out I should deploy a job
+
+
+gcloud run jobs deploy vis-oz-pipeline   --image=us-docker.pkg.dev/gcp-wow-rwds-ai-mleops-prod/semology/vis-oz-pipeline:latest   --region=us-central1   --service-account=semology-dev@gcp-wow-rwds-ai-semology-dev.iam
+.gserviceaccount.com   --memory=4Gi   --tasks=1   --max-retries=0
+Deploying container to Cloud Run job [vis-oz-pipeline] in project [gcp-wow-rwds-ai-semology-dev] region [us-central1]
+✓ Creating job... Done.                                                                                                        
+Done.                                                                                                                          
+Job [vis-oz-pipeline] has successfully been deployed.
+
+
+# then added env:TARGET_PROJECT_ID in service yaml file as the code requires this env
+
+# trigger
+curl -X POST "https://visual-oz-retrive-121869423260.us-central1.run.app"   -H "Authorization: Bearer $(gcloud auth print-identity-token)"   -H "X-Goog-User-Project: gcp-wow-rwds-ai-semology-dev"   -H "Content-Type: application/json"   -d '{"name": "Developer", "TARGET_PROJECT_ID":"gcp-wow-rwds-ai-semology-dev"}'
+Job vis-oz-pipeline triggered successfully for date: 2025-12-17
+
+
+# no need to use gcloud run deploy (a service), also need to modify main.py to listen (framework
+gcloud run  deploy vis-test-service   --image=us-docker.pkg.dev/gcp-wow-rwds-ai-mleops-prod/semology/vis-oz-pipeline:latest   --region=us-central1    --memory=4Gi  --service-account=semology-dev@gcp-wow-rwds-ai-semology-dev.iam.gserviceaccount.com
+
+y) The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+
+Logs URL: https://console.cloud.google.com/logs/viewer?project=gcp-wow-rwds-ai-semology-dev&resource=cloud_run_revision/service_name/vis-test-service/revision_name/vis-test-service-00001-r4t&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22vis-test-service%22%0Aresource.labels.revision_name%3D%22vis-test-service-00001-r4t%22 
+For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+
+# this is like legacy entry, it prefers to build cloud run function from source code (asks for main.py)
+gcloud functions deploy vis-oz-pipeline \
+  --gen2 \
+  --region=us-central1 \
+  --image=us-docker.pkg.dev/gcp-wow-rwds-ai-mleops-prod/semology/vis-oz-pipeline:latest \
+  --trigger-http \
+  --no-allow-unauthenticated \
+  --service-account=semology-prod@gcp-wow-rwds-ai-semology-prod.iam.gserviceaccount.com \
+  --memory=4Gi \
+  --timeout=3600s \
+  --max-instances=10
+
+
+
+## UPDATE Docker to new PY:
+
+latest: digest: sha256:ba64dc1e719424ae23a433b7b09593c0c39e757ec19fd99e8fa776ffc9c5f2c1 size: 
+
+re on Python 3.12, the error module 'importlib.metadata' has no attribute 'packages_distributions' is a major "red flag.
+
