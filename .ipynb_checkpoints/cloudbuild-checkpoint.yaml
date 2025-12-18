@@ -1,0 +1,42 @@
+steps:
+  # 1. Build the container image using the Dockerfile you provided. dont use $SHORT_SHA as not declared
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build', 
+      '-t', 'us-docker.pkg.dev/gcp-wow-rwds-ai-mleops-prod/semology/vis-oz-pipeline:latest', 
+      '.'
+    ]
+
+  # 2. Push the image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'push', 
+      'us-docker.pkg.dev/gcp-wow-rwds-ai-mleops-prod/semology/vis-oz-pipeline:latest'
+    ]
+    
+# 3. Update/Deploy the Cloud Run Job, 
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'jobs'
+      - 'deploy'
+      - 'vis-oz-pipeline'
+      - '--image'
+      - 'us-docker.pkg.dev/gcp-wow-rwds-ai-mleops-prod/semology/vis-oz-pipeline:latest'
+      - '--region'
+      - 'us-central1'
+      - '--service-account'
+      - 'semology-dev@gcp-wow-rwds-ai-semology-dev.iam.gserviceaccount.com'
+      - '--memory'
+      - '4Gi'
+      - '--tasks'
+      - '1'
+      - '--max-retries'
+      - '0'
+      - '--set-env-vars'
+      - 'TARGET_PROJECT_ID=gcp-wow-rwds-ai-semology-dev'
+
+# Define where the built images are stored
+images:
+  - 'us-docker.pkg.dev/gcp-wow-rwds-ai-mleops-prod/semology/vis-oz-pipeline:latest'
