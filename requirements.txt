@@ -6,6 +6,4 @@ google-cloud-secret-manager
 google-cloud-storage
 google-auth
 beautifulsoup4
-functions-framework>=3.8.1
-setuptools>=70.0.0
-blinker>=1.7.0
+functions-framework
