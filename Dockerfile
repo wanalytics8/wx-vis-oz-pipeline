@@ -16,11 +16,13 @@ RUN apt-get update && apt-get install -y \
 # 3. Install pip for Python 3.12
 RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.12
 
-# 4. FORCE SYSTEM ALIGNMENT (Added logic here)
-# This ensures any background scripts calling 'python3' or 'python' use 3.12
+# 4. FORCE SYSTEM ALIGNMENT
 RUN ln -sf /usr/bin/python3.12 /usr/bin/python3
 RUN ln -sf /usr/bin/python3.12 /usr/bin/python
+
+# ADDED HERE: Force 3.12 to be the primary owner of the framework
 RUN python3.12 -m pip install --upgrade pip
+RUN python3.12 -m pip install functions-framework 
 
 # 5. Set the Java Home environment variable for tabula-py
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
@@ -29,7 +31,6 @@ ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 WORKDIR /app
 
 # 7. Copy and install Python dependencies
-# We use the explicit python3.12 binary to bypass any legacy system paths
 COPY requirements.txt .
 RUN python3.12 -m pip install --no-cache-dir --upgrade -r requirements.txt --ignore-installed blinker
 
@@ -37,6 +38,4 @@ RUN python3.12 -m pip install --no-cache-dir --upgrade -r requirements.txt --ign
 COPY main_script_cf.py main.py
 
 # 9. Define the container entry point
-# Invoking functions-framework as a module through python3.12 prevents 
-# the interpreter from reverting to a legacy version (like 3.8)
 CMD ["python3.12", "-m", "functions-framework", "--target=extract_and_load_visualoz", "--port=8080"]
