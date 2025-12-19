@@ -4,6 +4,9 @@ pandas-gbq
 tabula-py
 google-cloud-secret-manager
 google-cloud-storage
-google-auth
+google-oauth
 beautifulsoup4
-functions-framework
+functions-framework>=3.8.1
+setuptools>=70.0.0
+importlib-metadata>=8.0.0
+blinker>=1.7.0
