@@ -42,3 +42,15 @@ options:
 # Define where the built images are stored
 images:
   - 'us-docker.pkg.dev/gcp-wow-rwds-ai-mleops-prod/semology/vis-oz-pipeline:latest'
+
+# 4. (Optional) Trigger the Job to run immediately after deploy
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'jobs'
+      - 'execute'
+      - 'vis-oz-pipeline'
+      - '--region'
+      - 'us-central1'
+      - '--wait' # Wait for completion so you see success/fail in Cloud Build logs
